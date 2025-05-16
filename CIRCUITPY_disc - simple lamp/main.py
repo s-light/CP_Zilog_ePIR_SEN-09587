@@ -61,8 +61,28 @@ def fadeOff():
     my_input.print("fadeOff")
     for i in range(1000, 0, -1):
         led.brightness = i/1000
-        time.sleep(0.01)
+        time.sleep(0.02)
     my_input.print("fadeOff done.")
+
+def waitForSensorReady():
+    ready = False
+    while not ready:
+        uart.write('a')
+        if (uart.read(1) is not b'U'):
+            ready = True
+            time.sleep(1)
+
+
+# ##########################################
+# main
+
+led.brightness = 0.1
+led[0] = (50, 0, 255)
+
+waitForSensorReady()
+
+led.brightness = 0.0
+led[0] = (255, 100, 0)
 
 while True:
     while uart.in_waiting > 0:
@@ -71,7 +91,7 @@ while True:
             my_input.print("Motion!")
             # led.brightness = 1.0
             fadeOn()
-            time.sleep(1)
+            time.sleep(20)
             fadeOff()
             uart.reset_input_buffer()
         else:
